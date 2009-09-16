@@ -90,7 +90,7 @@ module Formtastic #:nodoc:
       options[:as]     ||= default_input_type(method)
 
       html_class = [ options[:as], (options[:required] ? :required : :optional) ]
-      html_class << 'error' if @object && @object.respond_to?(:errors) && @object.errors[method.to_sym]
+      html_class << 'error' if @object && @object.respond_to?(:errors) && @object.errors.on(method.to_sym)
 
       wrapper_html = options.delete(:wrapper_html) || {}
       wrapper_html[:id]  ||= generate_html_id(method)
@@ -363,7 +363,7 @@ module Formtastic #:nodoc:
       text = localized_attribute_string(method, text, :label) || humanized_attribute_name(method)
       text += required_or_optional_string(options.delete(:required))
 
-      input_name = options.delete(:input_name) || method
+      input_name = options.delete(:input_name) || method.to_sym
       if options.delete(:as_span)
         options[:class] ||= 'label'
         template.content_tag(:span, text, options)
@@ -386,7 +386,7 @@ module Formtastic #:nodoc:
     def inline_errors_for(method, options=nil) #:nodoc:
       return nil unless @object && @object.respond_to?(:errors) && [:sentence, :list].include?(@@inline_errors)
 
-      errors = @object.errors[method.to_sym]
+      errors = @object.errors.on(method.to_sym)
       send("error_#{@@inline_errors}", Array(errors)) unless errors.blank?
     end
     alias :errors_on :inline_errors_for

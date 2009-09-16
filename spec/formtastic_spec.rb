@@ -62,7 +62,7 @@ describe 'Formtastic' do
     @fred.stub!(:login).and_return('fred_smith')
     @fred.stub!(:id).and_return(37)
     @fred.stub!(:new_record?).and_return(false)
-    @fred.stub!(:errors).and_return(mock('errors', :[] => nil))
+    @fred.stub!(:errors).and_return(mock('errors', :on => nil))
 
     @bob = mock('user')
     @bob.stub!(:class).and_return(Author)
@@ -72,7 +72,7 @@ describe 'Formtastic' do
     @bob.stub!(:posts).and_return([])
     @bob.stub!(:post_ids).and_return([])
     @bob.stub!(:new_record?).and_return(false)
-    @bob.stub!(:errors).and_return(mock('errors', :[] => nil))
+    @bob.stub!(:errors).and_return(mock('errors', :on => nil))
 
     Author.stub!(:find).and_return([@fred, @bob])
     Author.stub!(:human_attribute_name).and_return { |column_name| column_name.humanize }
@@ -85,7 +85,7 @@ describe 'Formtastic' do
     @new_post.stub!(:class).and_return(Post)
     @new_post.stub!(:id).and_return(nil)
     @new_post.stub!(:new_record?).and_return(true)
-    @new_post.stub!(:errors).and_return(mock('errors', :[] => nil))
+    @new_post.stub!(:errors).and_return(mock('errors', :on => nil))
     @new_post.stub!(:author).and_return(nil)
 
     @freds_post = mock('post')
@@ -97,7 +97,7 @@ describe 'Formtastic' do
     @freds_post.stub!(:authors).and_return([@fred])
     @freds_post.stub!(:author_ids).and_return([@fred.id])
     @freds_post.stub!(:new_record?).and_return(false)
-    @freds_post.stub!(:errors).and_return(mock('errors', :[] => nil))
+    @freds_post.stub!(:errors).and_return(mock('errors', :on => nil))
     @fred.stub!(:posts).and_return([@freds_post])
     @fred.stub!(:post_ids).and_return([@freds_post.id])
 
@@ -336,8 +336,8 @@ describe 'Formtastic' do
       before(:each) do
         @title_errors = ['must not be blank', 'must be longer than 10 characters', 'must be awesome']
         @errors = mock('errors')
-        @errors.stub!(:[]).with(:title).and_return(@title_errors)
-        @errors.stub!(:[]).with(:body).and_return(nil)
+        @errors.stub!(:on).with(:title).and_return(@title_errors)
+        @errors.stub!(:on).with(:body).and_return(nil)
         @new_post.stub!(:errors).and_return(@errors)
       end
 
@@ -922,7 +922,8 @@ describe 'Formtastic' do
           before do
             @title_errors = ['must not be blank', 'must be longer than 10 characters', 'must be awesome']
             @errors = mock('errors')
-            @errors.stub!(:[]).with(:title).and_return(@title_errors)
+            @errors.stub!(:on).with(:title).and_return(@title_errors)
+            @errors.stub!(:on).with('title').and_return(@title_errors) 
             @new_post.stub!(:errors).and_return(@errors)
           end
 
@@ -1230,7 +1231,8 @@ describe 'Formtastic' do
         
         it "should not render inline errors" do
           @errors = mock('errors')
-          @errors.stub!(:[]).with(:secret).and_return(["foo", "bah"])
+          @errors.stub!(:on).with(:secret).and_return(["foo", "bah"])
+          @errors.stub!(:on).with('secret').and_return(["foo", "bah"]) # Annoying that Actui
           @new_post.stub!(:errors).and_return(@errors)
           
           semantic_form_for(@new_post) do |builder|
